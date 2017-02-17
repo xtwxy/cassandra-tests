@@ -1,7 +1,18 @@
 *.class
+**/target
+**/bin
+**/.polyglot.build.properties
+**/.idea
+**/.project
+
+**/*.iml
+.classpath
+.wtpmodules
+.settings
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
+workspace/
 
 # Package Files #
 *.jar
