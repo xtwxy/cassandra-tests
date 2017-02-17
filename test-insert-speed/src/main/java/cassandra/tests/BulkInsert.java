@@ -1,13 +1,19 @@
 package cassandra.tests;
 
 import java.util.Arrays;
+import java.util.Date;
 
+import me.prettyprint.cassandra.serializers.StringSerializer;
 import me.prettyprint.cassandra.service.CassandraHostConfigurator;
 import me.prettyprint.cassandra.service.ThriftKsDef;
 import me.prettyprint.hector.api.Cluster;
+import me.prettyprint.hector.api.Keyspace;
 import me.prettyprint.hector.api.ddl.ColumnFamilyDefinition;
+import me.prettyprint.hector.api.ddl.ComparatorType;
 import me.prettyprint.hector.api.ddl.KeyspaceDefinition;
 import me.prettyprint.hector.api.factory.HFactory;
+import me.prettyprint.hector.api.mutation.MutationResult;
+import me.prettyprint.hector.api.mutation.Mutator;
 
 public class BulkInsert {
 	public static String CLUSTER_NAME = "dcim-cluster";
@@ -21,14 +27,23 @@ public class BulkInsert {
 		KeyspaceDefinition keyspaceDef = cluster.describeKeyspace(MONITORDB_KEYSPACE);
 		if (keyspaceDef == null) {
 			createSchema(cluster);
+			return;
+		} else {
+			System.out.println("get existing keyspace success.");
 		}
+		Keyspace keyspace = HFactory.createKeyspace(MONITORDB_KEYSPACE, cluster);
+		Mutator<String> mutator = HFactory.createMutator(keyspace, StringSerializer.get());
+		
+		MutationResult result = mutator.insert("1", COLUMN_FAMILY_HISTORY_AI,
+				HFactory.createStringColumn("value12", "assadsdfdf"));
+		System.out.println("mutation result = " + result);
 	}
 
 	private static void createSchema(Cluster cluster) {
 		ColumnFamilyDefinition columnFamilyDef = HFactory.createColumnFamilyDefinition(MONITORDB_KEYSPACE,
-				COLUMN_FAMILY_HISTORY_AI);
+				COLUMN_FAMILY_HISTORY_AI, ComparatorType.UTF8TYPE);
 		KeyspaceDefinition keyspace = HFactory.createKeyspaceDefinition(MONITORDB_KEYSPACE,
-				ThriftKsDef.NETWORK_TOPOLOGY_STRATEGY, REPLICATION_FACTOR, Arrays.asList(columnFamilyDef));
+				ThriftKsDef.DEF_STRATEGY_CLASS, REPLICATION_FACTOR, Arrays.asList(columnFamilyDef));
 		cluster.addKeyspace(keyspace, true);
 	}
 

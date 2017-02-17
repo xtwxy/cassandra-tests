@@ -18,6 +18,7 @@
 
 	<modules>
 		<module>tests-parent</module>
+		<module>test-crud</module>
 		<module>test-insert-speed</module>
 	</modules>
 </project>
