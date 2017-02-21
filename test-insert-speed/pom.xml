@@ -28,9 +28,9 @@
 			<version>${cassandra.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.hectorclient</groupId>
-			<artifactId>hector-core</artifactId>
-			<version>${hectorclient.version}</version>
+			<groupId>com.datastax.cassandra</groupId>
+			<artifactId>cassandra-driver-core</artifactId>
+			<version>${cassandra-driver-core.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
