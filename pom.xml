@@ -17,6 +17,7 @@
 	<name>cassandra-tests</name>
 
 	<modules>
+		<module>mstar-server</module>
 		<module>tests-parent</module>
 		<module>test-crud</module>
 		<module>test-insert-speed</module>
