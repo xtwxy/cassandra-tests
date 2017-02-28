@@ -1,0 +1,22 @@
+<soapenv:Envelope>
+    <soapenv:Body>
+        <ns1:invoke soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+            <xmlData xsi:type="soapenc:string">
+                <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+                <Request>
+                    <PK_Type>
+                        <Name>LOGIN</Name>
+                    </PK_Type>
+                    <Info>
+                        <UserName>wangxy</UserName>
+                        <PassWord>p455w0rd</PassWord>
+                        <FSUID>fsu-id-001</FSUID>
+                        <FSUIP>192.168.0.78</FSUIP>
+                        <FSUMAC>10:10:10:10:10</FSUMAC>
+                        <FSUVER>version 1.0 alpha</FSUVER>
+                    </Info>
+                </Request>
+            </xmlData>
+        </ns1:invoke>
+    </soapenv:Body>
+</soapenv:Envelope>
