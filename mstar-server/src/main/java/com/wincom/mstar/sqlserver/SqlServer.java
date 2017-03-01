@@ -5,7 +5,7 @@ import java.sql.Statement;
 import java.sql.DriverManager;
 import java.sql.Connection;
 public class SqlServer {
-	private String JDBCDriver="com.microsoft.sqlserver.jdbc.SQLServerDriver";//驱动程序字符串
+	private String JDBCDriver="net.sourceforge.jtds.jdbc.Driver";//驱动程序字符串
 	private String JDBCConnection;
 	public Connection conn=null;//数据库连接对象
 	private static ReadProperties rPro=new ReadProperties();
@@ -23,7 +23,7 @@ public class SqlServer {
 			dbUser=rPro.getDbUserName(type);
 			dbPwd=rPro.getDbPassWord(type);
 			dbName=rPro.getDbName(type);
-			JDBCConnection="jdbc:sqlserver://"+dbIp+":1433;DatabaseName="+dbName;
+			JDBCConnection="jdbc:jtds:sqlserver://"+dbIp+":1433/"+dbName;
 			System.out.println(JDBCConnection);
 		}
 		try

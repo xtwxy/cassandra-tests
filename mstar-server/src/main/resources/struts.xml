@@ -1,11 +1,13 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN" "http://struts.apache.org/dtds/struts-2.0.dtd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+    "http://struts.apache.org/dtds/struts-2.5.dtd">
 <struts>
 	<constant name="struts.enable.DynamicMethodInvocation" value="true" />
 	<constant name="struts.convention.action.mapallmatches" value="true" />
 	<constant name="struts.configuration.xml.reload" value="true" />
 	<constant name="struts.devMode" value="true" />
-	<package name="default" namespace="/" extends="json-default">
+	<package name="default" namespace="/" extends="json-default" strict-method-invocation="false">
 		<action name="Energy" class="com.wincom.mstar.impl.EnergyResponse">
 			<result name="success" type="json"></result>
 		</action>
