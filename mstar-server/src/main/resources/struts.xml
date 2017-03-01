@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN" "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+	<constant name="struts.enable.DynamicMethodInvocation" value="true" />
+	<constant name="struts.convention.action.mapallmatches" value="true" />
+	<constant name="struts.configuration.xml.reload" value="true" />
+	<constant name="struts.devMode" value="true" />
+	<package name="default" namespace="/" extends="json-default">
+		<action name="Energy" class="com.wincom.mstar.impl.EnergyResponse">
+			<result name="success" type="json"></result>
+		</action>
+		<action name="AlarmAnalysis" class="com.wincom.mstar.impl.AlarmAnalysisResponse">
+			<result name="success" type="json"></result>
+		</action>
+		<action name="Alarm" class="com.wincom.mstar.impl.HisAlarmResponse">
+			<result name="success" type="json"></result>
+		</action>
+		<action name="Config" class="com.wincom.mstar.impl.BaseConfigResponse">
+			<result name="success" type="json"></result>
+		</action>
+		<action name="DeviceProperty" class="com.wincom.mstar.impl.DevicePropertyResponse">
+			<result name="success" type="json"></result>
+		</action>
+		<action name="RealData" class="com.wincom.mstar.impl.RealDataResponse">
+			<result name="success" type="json"></result>
+		</action>
+		<action name="DeviceRealData" class="com.wincom.mstar.impl.RealDataDevResponse">
+			<result name="success" type="json"></result>
+		</action>
+		<action name="SignalRealData" class="com.wincom.mstar.impl.RealDataDatResponse">
+			<result name="success" type="json"></result>
+		</action>
+		<action name="Capacity" class="com.wincom.mstar.impl.CapacityResponse">
+			<result name="success" type="json"></result>
+		</action>
+		<action name="CloudChart" class="com.wincom.mstar.impl.CloudChartResponse">
+			<result name="success" type="json"></result>
+		</action>
+		<action name="CloudChartU" class="com.wincom.mstar.impl.CloudChartUBitResponse">
+			<result name="success" type="json"></result>
+		</action>
+		<action name="DevRealData" class="com.wincom.mstar.impl.DeviceRealDataResponse">
+			<result name="success" type="json"></result>
+		</action>
+		<action name="CapacityRP" class="com.wincom.mstar.impl.CapacityPowerResponse">
+			<result name="success" type="json"></result>
+		</action>
+		<action name="PUE" class="com.wincom.mstar.impl.PUEResponse">
+			<result name="success" type="json"></result>
+		</action>
+		<action name="RealDataPower" class="com.wincom.mstar.impl.RealDataPowerResponse">
+			<result name="success" type="json"></result>
+		</action>
+		<action name="HisAlarm" class="com.wincom.mstar.reportform.impl.HisAlarmResponse">
+			<result name="success" type="json"></result>
+		</action>
+		<action name="AlarmAck" class="com.wincom.mstar.reportform.impl.AlarmAckResponse">
+			<result name="success" type="json"></result>
+		</action>
+	</package>
+</struts>

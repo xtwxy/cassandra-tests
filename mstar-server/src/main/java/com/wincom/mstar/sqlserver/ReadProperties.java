@@ -116,6 +116,5 @@ public class ReadProperties {
 	public String getPropertyString() {
 		
 		return PropertyString;
-		//return "http://113.108.158.20:8088/realdata";
 	}
 }
