@@ -39,7 +39,7 @@ public class SqlServer {
 	{
 		dbUser=rPro.getDbUserName(type);
 		dbPwd=rPro.getDbPassWord(type);
-		JDBCConnection="jdbc:sqlserver://"+rPro.getDbIpAddres(type)+":1433;DatabaseName="+DbName;
+		JDBCConnection="jdbc:jtds:sqlserver://"+rPro.getDbIpAddres(type)+":1433/"+DbName;
 		try
 		{
 			Class.forName(JDBCDriver);//加载驱动程序

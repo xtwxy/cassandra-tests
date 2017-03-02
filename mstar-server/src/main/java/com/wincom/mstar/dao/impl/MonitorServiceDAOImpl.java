@@ -404,7 +404,7 @@ public class MonitorServiceDAOImpl implements MonitorServiceDAO {
 			SimpleDateFormat sdf = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss");
 			Date date = sdf.parse(startTime);
 			DateFormat format1 = new SimpleDateFormat("yyyyMM");
-			hisName="MStarDb"+format1.format(date);
+			hisName="MStarDb201612";//+format1.format(date);
 		}
 		catch(ParseException e)
 		{
