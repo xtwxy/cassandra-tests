@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+  PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+  "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+  <classPathEntry location="/home/master/.m2/repository/net/sourceforge/jtds/jtds/1.3.1/jtds-1.3.1.jar" />
+
+  <context id="cmcc-sc-tables" targetRuntime="MyBatis3">
+    <jdbcConnection driverClass="net.sourceforge.jtds.jdbc.Driver"
+        connectionURL="jdbc:jtds:sqlserver://113.108.158.20:1433/nfjd502"
+        userId="sa"
+        password="Wincom2016">
+    </jdbcConnection>
+
+    <javaTypeResolver >
+      <property name="forceBigDecimals" value="false" />
+    </javaTypeResolver>
+
+    <javaModelGenerator targetPackage="com.wincom.mstar.domain" targetProject="src/main/java">
+      <property name="enableSubPackages" value="false" />
+      <property name="trimStrings" value="true" />
+    </javaModelGenerator>
+
+    <sqlMapGenerator targetPackage="com.wincom.mstar.dao.mapper"  targetProject="src/main/resources">
+      <property name="enableSubPackages" value="false" />
+    </sqlMapGenerator>
+
+    <javaClientGenerator type="XMLMAPPER" targetPackage="com.wincom.mstar.dao.mapper"  targetProject="src/main/java">
+      <property name="enableSubPackages" value="false" />
+    </javaClientGenerator>
+    
+	<table catalog="Energy" schema="dbo" tableName="AHistoryData1Minute" domainObjectName="AHistoryData1Minute" />
+	<table catalog="Energy" schema="dbo" tableName="AHistoryDataDay" domainObjectName="AHistoryDataDay" />
+	<table catalog="Energy" schema="dbo" tableName="AHistoryDataHour" domainObjectName="AHistoryDataHour" />
+	<table catalog="Energy" schema="dbo" tableName="AHistoryDataMinute" domainObjectName="AHistoryDataMinute" />
+	<table catalog="Energy" schema="dbo" tableName="Area" domainObjectName="Area" />
+	<table catalog="Energy" schema="dbo" tableName="BEnergy1Minute" domainObjectName="BEnergy1Minute" />
+	<table catalog="Energy" schema="dbo" tableName="BEnergyDay" domainObjectName="BEnergyDay" />
+	<table catalog="Energy" schema="dbo" tableName="BEnergyHour" domainObjectName="BEnergyHour" />
+	<table catalog="Energy" schema="dbo" tableName="BEnergyMinute" domainObjectName="BEnergyMinute" />
+	<table catalog="Energy" schema="dbo" tableName="BEnergyMonth" domainObjectName="BEnergyMonth" />
+	<table catalog="Energy" schema="dbo" tableName="BEnergyYear" domainObjectName="BEnergyYear" />
+	<table catalog="Energy" schema="dbo" tableName="sysdiagrams" domainObjectName="sysdiagrams" />
+	<table catalog="nfjd502" schema="dbo" tableName="AAlarmData" domainObjectName="AAlarmData" />
+	<table catalog="nfjd502" schema="dbo" tableName="BAIHistoryDay" domainObjectName="BAIHistoryDay" />
+	<table catalog="nfjd502" schema="dbo" tableName="BAIHistoryHour" domainObjectName="BAIHistoryHour" />
+	<table catalog="nfjd502" schema="dbo" tableName="BAIHistoryQuarter" domainObjectName="BAIHistoryQuarter" />
+	<table catalog="nfjd502" schema="dbo" tableName="BAlarmData" domainObjectName="BAlarmData" />
+	<table catalog="nfjd502" schema="dbo" tableName="BAlarmEvent" domainObjectName="BAlarmEvent" />
+	<table catalog="nfjd502" schema="dbo" tableName="BAlarmSendFail" domainObjectName="BAlarmSendFail" />
+	<table catalog="nfjd502" schema="dbo" tableName="BBIDConfig" domainObjectName="BBIDConfig" />
+	<table catalog="nfjd502" schema="dbo" tableName="BDIHistoryDay" domainObjectName="BDIHistoryDay" />
+	<table catalog="nfjd502" schema="dbo" tableName="BDIHistoryHour" domainObjectName="BDIHistoryHour" />
+	<table catalog="nfjd502" schema="dbo" tableName="BDIHistoryQuarter" domainObjectName="BDIHistoryQuarter" />
+	<table catalog="nfjd502" schema="dbo" tableName="BDoorOperationLog" domainObjectName="BDoorOperationLog" />
+	<table catalog="nfjd502" schema="dbo" tableName="BObjChange" domainObjectName="BObjChange" />
+	<table catalog="nfjd502" schema="dbo" tableName="BOperationData" domainObjectName="BOperationData" />
+	<table catalog="nfjd502" schema="dbo" tableName="BOperationLog" domainObjectName="BOperationLog" />
+	<table catalog="nfjd502" schema="dbo" tableName="BOptimalEvent" domainObjectName="BOptimalEvent" />
+	<table catalog="nfjd502" schema="dbo" tableName="BOptimalValue" domainObjectName="BOptimalValue" />
+	<table catalog="nfjd502" schema="dbo" tableName="BRepairLog" domainObjectName="BRepairLog" />
+	<table catalog="nfjd502" schema="dbo" tableName="BUserLog" domainObjectName="BUserLog" />
+	<table catalog="nfjd502" schema="dbo" tableName="CAgentCfg" domainObjectName="CAgentCfg" />
+	<table catalog="nfjd502" schema="dbo" tableName="CAIObject" domainObjectName="CAIObject" />
+	<table catalog="nfjd502" schema="dbo" tableName="CAIThreshhold" domainObjectName="CAIThreshhold" />
+	<table catalog="nfjd502" schema="dbo" tableName="CAlarmData" domainObjectName="CAlarmData" />
+	<table catalog="nfjd502" schema="dbo" tableName="CAOObject" domainObjectName="CAOObject" />
+	<table catalog="nfjd502" schema="dbo" tableName="CBIObjectID" domainObjectName="CBIObjectID" />
+	<table catalog="nfjd502" schema="dbo" tableName="CComboOperationObject" domainObjectName="CComboOperationObject" />
+	<table catalog="nfjd502" schema="dbo" tableName="CDataObject" domainObjectName="CDataObject" />
+	<table catalog="nfjd502" schema="dbo" tableName="CDevice" domainObjectName="CDevice" />
+	<table catalog="nfjd502" schema="dbo" tableName="CDeviceProperty" domainObjectName="CDeviceProperty" />
+	<table catalog="nfjd502" schema="dbo" tableName="CDeviceType" domainObjectName="CDeviceType" />
+	<table catalog="nfjd502" schema="dbo" tableName="CDeviceTypeEx" domainObjectName="CDeviceTypeEx" />
+	<table catalog="nfjd502" schema="dbo" tableName="CDIObject" domainObjectName="CDIObject" />
+	<table catalog="nfjd502" schema="dbo" tableName="CDoor" domainObjectName="CDoor" />
+	<table catalog="nfjd502" schema="dbo" tableName="CDoorAccess" domainObjectName="CDoorAccess" />
+	<table catalog="nfjd502" schema="dbo" tableName="CDoorEventType" domainObjectName="CDoorEventType" />
+	<table catalog="nfjd502" schema="dbo" tableName="CDoorKey" domainObjectName="CDoorKey" />
+	<table catalog="nfjd502" schema="dbo" tableName="CDoorLog" domainObjectName="CDoorLog" />
+	<table catalog="nfjd502" schema="dbo" tableName="CDriverCfg" domainObjectName="CDriverCfg" />
+	<table catalog="nfjd502" schema="dbo" tableName="CEmploye" domainObjectName="CEmploye" />
+	<table catalog="nfjd502" schema="dbo" tableName="CEmployeGroup" domainObjectName="CEmployeGroup" />
+	<table catalog="nfjd502" schema="dbo" tableName="CEmployeGroupAsso" domainObjectName="CEmployeGroupAsso" />
+	<table catalog="nfjd502" schema="dbo" tableName="CFSUCfg" domainObjectName="CFSUCfg" />
+	<table catalog="nfjd502" schema="dbo" tableName="CFSUType" domainObjectName="CFSUType" />
+	<table catalog="nfjd502" schema="dbo" tableName="CKey" domainObjectName="CKey" />
+	<table catalog="nfjd502" schema="dbo" tableName="CLayerAttr" domainObjectName="CLayerAttr" />
+	<table catalog="nfjd502" schema="dbo" tableName="CLogicalObject" domainObjectName="CLogicalObject" />
+	<table catalog="nfjd502" schema="dbo" tableName="CLogicalObjPos" domainObjectName="CLogicalObjPos" />
+	<table catalog="nfjd502" schema="dbo" tableName="CLogObjUI" domainObjectName="CLogObjUI" />
+	<table catalog="nfjd502" schema="dbo" tableName="CModel" domainObjectName="CModel" />
+	<table catalog="nfjd502" schema="dbo" tableName="CMountPlace" domainObjectName="CMountPlace" />
+	<table catalog="nfjd502" schema="dbo" tableName="CNAlarmMessage" domainObjectName="CNAlarmMessage" />
+	<table catalog="nfjd502" schema="dbo" tableName="CNAlarmSoundCfg" domainObjectName="CNAlarmSoundCfg" />
+	<table catalog="nfjd502" schema="dbo" tableName="CNum" domainObjectName="CNum" />
+	<table catalog="nfjd502" schema="dbo" tableName="COperationObject" domainObjectName="COperationObject" />
+	<table catalog="nfjd502" schema="dbo" tableName="COperationResultCode" domainObjectName="COperationResultCode" />
+	<table catalog="nfjd502" schema="dbo" tableName="COperationStateCode" domainObjectName="COperationStateCode" />
+	<table catalog="nfjd502" schema="dbo" tableName="COptimalCfg" domainObjectName="COptimalCfg" />
+	<table catalog="nfjd502" schema="dbo" tableName="CProjectCfg" domainObjectName="CProjectCfg" />
+	<table catalog="nfjd502" schema="dbo" tableName="CSIObject" domainObjectName="CSIObject" />
+	<table catalog="nfjd502" schema="dbo" tableName="CStationProperty" domainObjectName="CStationProperty" />
+	<table catalog="nfjd502" schema="dbo" tableName="CUser" domainObjectName="CUser" />
+	<table catalog="nfjd502" schema="dbo" tableName="CUserAreaAsso" domainObjectName="CUserAreaAsso" />
+	<table catalog="nfjd502" schema="dbo" tableName="CUserGroup" domainObjectName="CUserGroup" />
+	<table catalog="nfjd502" schema="dbo" tableName="CUserGroupAsso" domainObjectName="CUserGroupAsso" />
+	<table catalog="nfjd502" schema="dbo" tableName="CZDeviceData" domainObjectName="CZDeviceData" />
+	<table catalog="nfjd502" schema="dbo" tableName="CZNotifyLevel" domainObjectName="CZNotifyLevel" />
+	<table catalog="nfjd502" schema="dbo" tableName="ModuleInfo" domainObjectName="ModuleInfo" />
+	<table catalog="nfjd502" schema="dbo" tableName="RoleInfo" domainObjectName="RoleInfo" />
+	<table catalog="nfjd502" schema="dbo" tableName="RoleModule" domainObjectName="RoleModule" />
+	<table catalog="nfjd502" schema="dbo" tableName="SMSPool" domainObjectName="SMSPool" />
+	<table catalog="nfjd502" schema="dbo" tableName="data_object_view_path" domainObjectName="data_object_view_path" />
+	<table catalog="nfjd502" schema="dbo" tableName="View_DeviceProperty" domainObjectName="View_DeviceProperty" />
+
+   </context>
+</generatorConfiguration>
