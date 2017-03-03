@@ -8,7 +8,7 @@
 	<constant name="struts.configuration.xml.reload" value="true" />
 	<constant name="struts.devMode" value="true" />
 	<package name="default" namespace="/" extends="json-default" strict-method-invocation="false">
-		<action name="Energy" class="com.wincom.mstar.impl.EnergyResponse">
+		<action name="Energy" class="energyResponse">
 			<result name="success" type="json"></result>
 		</action>
 		<action name="AlarmAnalysis" class="com.wincom.mstar.impl.AlarmAnalysisResponse">

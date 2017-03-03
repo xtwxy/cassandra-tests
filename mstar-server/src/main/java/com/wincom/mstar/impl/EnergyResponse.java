@@ -1,17 +1,12 @@
 package com.wincom.mstar.impl;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.GregorianCalendar;
 
 import com.opensymphony.xwork2.ActionSupport;
+import com.wincom.mstar.EnergyBase;
 
 import net.sf.json.JSONObject;
-import com.wincom.mstar.*;
 public class EnergyResponse extends ActionSupport {
 	private String serial;
 	private int type;
