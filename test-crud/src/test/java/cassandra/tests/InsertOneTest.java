@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.cassandra.core.CqlTemplate;
 
+import com.datastax.driver.core.querybuilder.Delete;
 import com.datastax.driver.core.querybuilder.Insert;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 
@@ -30,6 +31,12 @@ public class InsertOneTest {
 	
 	@After
 	public void tearDown() {
+		Delete.Where delete = QueryBuilder.delete()
+				.from("history_ai_quarter")
+				.where(QueryBuilder.eq("id", 1));
+
+		cql.execute(delete);
+	
 		ctxLoader.closeContext();
 	}
 	private CqlTemplate cql;

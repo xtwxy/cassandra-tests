@@ -5,7 +5,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.cassandra.core.CqlTemplate;
 
-import com.datastax.driver.core.querybuilder.Delete.Where;
+import com.datastax.driver.core.querybuilder.Delete;
+import com.datastax.driver.core.querybuilder.Insert;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 
 import cassandra.tests.util.AppContextLoader;
@@ -14,7 +15,7 @@ public class DeleteAllByIdTest {
 
 	@Test
 	public void test() {
-		Where delete = QueryBuilder.delete()
+		Delete.Where delete = QueryBuilder.delete()
 				.from("history_ai_quarter")
 				.where(QueryBuilder.eq("id", 1));
 
@@ -25,10 +26,23 @@ public class DeleteAllByIdTest {
 	public void setUp() {
 		ctxLoader = new AppContextLoader();
 		cql = ctxLoader.getContext().getBean(CqlTemplate.class);
+		
+		Insert insert = QueryBuilder.insertInto("history_ai_quarter")
+		.value("id", 1)
+		.value("ts", System.currentTimeMillis())
+		.value("value", Math.random());
+		
+		cql.execute(insert);
 	}
 
 	@After
 	public void tearDown() {
+		Delete.Where delete = QueryBuilder.delete()
+				.from("history_ai_quarter")
+				.where(QueryBuilder.eq("id", 1));
+
+		cql.execute(delete);
+		
 		ctxLoader.closeContext();
 	}
 

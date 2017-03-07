@@ -10,15 +10,15 @@
      http://www.springframework.org/schema/data/cassandra http://www.springframework.org/schema/data/cassandra/spring-cassandra.xsd">
 
 
-    <context:component-scan base-package="com.wincom.mstar"/>
+    <context:component-scan base-package="cassandra.tests"/>
 
     <cassandra:cluster contact-points="localhost" port="9042"/>
     <cassandra:converter/>
     <cassandra:session keyspace-name="monitordb"/>
-    <cassandra:template id="cassandraTemplate"/>
+    <cassandra:template id="cqlTemplate"/>
 
-    <cassandra:repositories base-package="com.wincom.mstar.repository"/>
-    <cassandra:mapping entity-base-packages="com.wincom.mstar.domain"/>
+    <cassandra:repositories base-package="cassandra.tests.repositories"/>
+    <cassandra:mapping entity-base-packages="cassandra.tests.domain"/>
 
 </beans>
 
