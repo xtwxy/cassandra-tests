@@ -27,7 +27,7 @@ public class HistoryAIQuarterRepositorySelectByIdAndTsRangeTest {
 		id.add(1);
 		Iterable<HistoryAI> rs = repository.findByIdAndDateRange(id, new Date(Long.valueOf(0)), new Date(System.currentTimeMillis()));
 		rs.forEach(x -> count += 1);
-		Assert.assertTrue(count != 0);
+		Assert.assertEquals(1, count);
 	}
 	
 	@Before
