@@ -16,11 +16,36 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.wincom.mstar.domain.HistoryAI;
+import com.wincom.mstar.impl.AlarmAnalysisResponse;
+import com.wincom.mstar.impl.EnergyResponse;
+import com.wincom.mstar.repository.HistoryAIHourRepository;
+import com.wincom.mstar.repository.HistoryAIMinuteRepository;
+import com.wincom.mstar.repository.HistoryAIMonthRepository;
+import com.wincom.mstar.repository.HistoryAIQuarterRepository;
+import com.wincom.mstar.repository.HistoryAIYearRepository;
 import com.wincom.mstar.sqlserver.SqlServer;
+
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import com.wincom.mstar.impl.*;
+
+@Component
 public class EnergyBase {
+	@Autowired
+	private HistoryAIYearRepository historyAIYearRepository;
+	@Autowired
+	private HistoryAIMonthRepository historyMonthDayRepository;
+	@Autowired
+	private HistoryAIHourRepository historyAIHourRepository;
+	@Autowired
+	private HistoryAIMinuteRepository historyAIMinuteRepository;
+	@Autowired
+	private HistoryAIQuarterRepository historyAIQuarterRepository;
+
 	public String getCurveSignal(Map<Integer,HistoryDataObj> map,String devId)
 	{
 		String sql = String.format("SELECT b.DataObjID as datId,b.DataObjName as datName,a.MaxVal as maxValue,a.MinVal as minValue,a.MeasureMonad as measureMonad  FROM CAIObject a,CDataObject b where a.AIObjID=b.DataObjID and b.DataObjNote like '%%ServerCurveTemp%%'  and b.ParLogObjID="+devId);
@@ -641,54 +666,36 @@ public class EnergyBase {
 			dbCfg.close();
 		}
 	}
+	public Iterable<HistoryAI> selectHistoryAIByIdAndTsRange(List<Integer> ids, Date begin, Date end, int type) {
+		switch(type)
+		{
+		case 0://年
+			historyAIYearRepository.findByIdAndDateRange(ids, begin, end);
+			break;
+		case 1://月
+			historyAIMonthRepository.findByIdAndDateRange(ids, begin, end);
+			break;
+		case 2://日
+			historyAIDayRepository.findByIdAndDateRange(ids, begin, end);
+			break;
+		case 3://15分钟
+			historyAIQuarterRepository.findByIdAndDateRange(ids, begin, end);
+			break;
+		case 4://1分钟
+			historyAIMinuteRepository.findByIdAndDateRange(ids, begin, end);
+			break;
+		}
+
+		return null;
+	}
+	
 	public String getHisData(String signalLstId,int type,String startTime,String endTime,EnergyResponse response)
 	{
 		String tabName="BAIHistoryQuarter";
 		String sql="";
 		Map<Integer,HistoryDataObj> map =new HashMap<Integer, HistoryDataObj>();
 		getSignalInfo(map,signalLstId);
-		/*String sql = String.format("SELECT b.DataObjID as datId,b.DataObjName as datName,a.MaxVal as maxValue,a.MinVal as minValue,a.MeasureMonad as measureMonad  FROM CAIObject a,CDataObject b where a.AIObjID=b.DataObjID and b.DataObjID in("+signalLstId+")");
-		ResultSet rsCfg = null;
-		SqlServer dbCfg=new SqlServer(0);//读取配置库
-		Map<Integer,HistoryDataObj> map =new HashMap<Integer, HistoryDataObj>();
-		System.out.println(sql);
-		if(dbCfg!=null)
-		{
-			try
-			{
-				dbCfg.connect();
-				int datId;
-				String datName,measureMonad;
-				double maxValue,minValue;
-				rsCfg=dbCfg.executeQuery(sql, rsCfg);
-				if(rsCfg==null)
-				{
-					return "";
-				}
-				DecimalFormat df= new DecimalFormat("0");
-				while(rsCfg.next())
-				{
-					datId=rsCfg.getInt("datId");
-					datName=rsCfg.getString("datName");
-					measureMonad=rsCfg.getString("measureMonad");
-					maxValue=rsCfg.getDouble("maxValue");
-					minValue=rsCfg.getDouble("minValue");
-					HistoryDataObj tmp=new HistoryDataObj();
-					tmp.setSerial(new Integer(datId).toString());
-					tmp.setMetric(measureMonad);
-					tmp.setName(datName);
-					tmp.getRange().add(new Double(df.format(minValue)).longValue());
-					tmp.getRange().add(new Double(df.format(maxValue)).longValue());
-					map.put(new Integer(datId), tmp);
-				}
-			}
-			catch(SQLException e)
-			{
-				dbCfg.close();
-				e.printStackTrace();
-			}
-			dbCfg.close();
-		}*/
+
 		switch(type)
 		{
 		case 0://年
@@ -742,41 +749,7 @@ public class EnergyBase {
 		{
 			String dbName="";
 			dbName=getHisDbName(startTime);
-			/*if(type<2)
-			{
-				if(startTime.compareToIgnoreCase(endTime)==0)
-				{
-					sql="select DataObjID,CurrentValue,RecordTime from "+tabName+" where DataObjID in("+signalLstId+") and RecordTime='"+startTime+"'";
-				}
-				else
-				{
-					sql="select DataObjID,CurrentValue,RecordTime from "+tabName+" where DataObjID in("+signalLstId+") and RecordTime>='"+startTime+"' and RecordTime<='"+endTime+"'";
-				}
-			}
-			else if(type==2)//获取小时的
-			{
-				try
-				{
-					SimpleDateFormat sdf = new SimpleDateFormat( "yyyy-MM-dd");
-					Date startDate = sdf.parse(startTime);
-					GregorianCalendar gc = new GregorianCalendar(); 
-			        gc.setTimeInMillis(startDate.getTime());
-			        
-					SimpleDateFormat format1 = new java.text.SimpleDateFormat("yyyy-MM-dd 00:00:00");
-					SimpleDateFormat format2 = new java.text.SimpleDateFormat("yyyy-MM-dd 23:59:59");
-					startTime=format1.format(startDate.getTime());
-					endTime=format2.format(startDate.getTime());
-					sql="select DataObjID,CurrentValue,RecordTime from "+tabName+" where DataObjID in("+signalLstId+") and RecordTime>='"+startTime+"' and RecordTime<='"+endTime+"'";
-				}
-				catch(ParseException e)
-				{
-					
-				}
-			}
-			else
-			{
-				sql="select DataObjID,CurrentValue,RecordTime from "+tabName+" where DataObjID in("+signalLstId+") and RecordTime>='"+startTime+"' and RecordTime<='"+endTime+"'";
-			}*/
+
 			sql="select DataObjID,CurrentValue,RecordTime from "+tabName+" where DataObjID in("+signalLstId+") and RecordTime>='"+startTime+"' and RecordTime<='"+endTime+"'";
 			System.out.println(sql);
 			getHisDataFromMstar(dbName,sql,map);

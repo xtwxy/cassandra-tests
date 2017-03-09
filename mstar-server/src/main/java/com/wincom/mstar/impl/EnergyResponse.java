@@ -1,10 +1,18 @@
 package com.wincom.mstar.impl;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.wincom.mstar.EnergyBase;
+import com.wincom.mstar.domain.HistoryAI;
 
 import net.sf.json.JSONObject;
 public class EnergyResponse extends ActionSupport {
@@ -15,6 +23,8 @@ public class EnergyResponse extends ActionSupport {
 	private String endTime;
 	private String signalLstId;
 	private JSONObject trend_data =new JSONObject();
+	@Autowired
+	EnergyBase eb;
 	public JSONObject getTrend_data() {
 		return trend_data;
 	}
@@ -52,13 +62,11 @@ public class EnergyResponse extends ActionSupport {
 		System.out.println(timeType);
 		System.out.println(startTime);
 		System.out.println(endTime);
-		EnergyBase eb=new EnergyBase();
 		eb.getEnergy(serial, type, timeType, startTime, endTime, this);
 		return "success";
 	}
 	public String responseToDay()
 	{
-		EnergyBase eb=new EnergyBase();
 		String str="",startTime="",endTime="";
 		LocalDateTime localtDateAndTime = LocalDateTime.now(); 
 		DateTimeFormatter formatter=DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -68,15 +76,38 @@ public class EnergyResponse extends ActionSupport {
 		eb.getEnergy(serial, type, timeType, startTime, endTime, this);
 		return "success";
 	}
-	public String responseHisData()
+	
+	private List<Integer> convertStringToIntegers(String str) {
+		List<Integer> l = new ArrayList<>();
+		if(l != null) {
+			String[] sa = str.split(",");
+			for(String s: sa) {
+				l.add(Integer.valueOf(s.trim()));
+			}
+		}
+		return l;
+	}
+	
+	private Date parseDatetime(String str) {
+		SimpleDateFormat sdf = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss");
+		try {
+			return sdf.parse(startTime);
+		} catch (ParseException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	public String responseHisData() 
 	{
-		EnergyBase eb=new EnergyBase();
-		eb.getHisData(serial, type,startTime, endTime, this);
+		// eb.getHisData(serial, type,startTime, endTime, this);
+		Date begin = parseDatetime(startTime);
+		Date end = parseDatetime(endTime);
+		
+		Iterable<HistoryAI> history = eb.selectHistoryAIByIdAndTsRange(convertStringToIntegers(serial), begin, end, type);
+		
 		return "success";
 	}
 	public String responseCurve()
 	{
-		EnergyBase eb=new EnergyBase();
 		eb.getCurve(serial, this);
 		return "success";
 	}

@@ -11,6 +11,7 @@
      http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
      http://www.springframework.org/schema/data/cassandra http://www.springframework.org/schema/data/cassandra/spring-cassandra.xsd">
 
+    <!-- RDBMS datasource connection pool -->
 	<bean id="dataSource" class="net.sourceforge.jtds.jdbcx.JtdsDataSource">
 		<property name="serverType" value="1" />
 		<property name="serverName" value="192.168.0.177" />
@@ -20,21 +21,22 @@
 		<property name="password" value="sp8956256" />
 	</bean>
 
+    <!-- RDBMS transaction manager, not for cassandra ! -->
 	<bean id="transactionManager"
 		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="dataSource" />
 	</bean>
 
+    <!-- RDBMS transaction manager, not for cassandra ! -->
 	<tx:annotation-driven transaction-manager="transactionManager" />
-
 	<tx:annotation-driven />
 
 	<context:component-scan base-package="com.wincom.mstar" />
 	
 	<cassandra:cluster contact-points="localhost" port="9042" />
 	<cassandra:converter />
-	<cassandra:session keyspace-name="springdata" />
-	<cassandra:template id="cassandraTemplate" />
+	<cassandra:session keyspace-name="monitordb" />
+	<cassandra:template id="cqlTemplate" />
 
 	<cassandra:repositories base-package="com.wincom.mstar.repository" />
 	<cassandra:mapping entity-base-packages="com.wincom.mstar.domain" />
