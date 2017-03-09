@@ -6,16 +6,23 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.wincom.mstar.EnergyBase;
+import com.wincom.mstar.HistoryDataObj;
 import com.wincom.mstar.domain.HistoryAI;
 
 import net.sf.json.JSONObject;
 public class EnergyResponse extends ActionSupport {
+	Log log = LogFactory.getLog(this.getClass());
+	
 	private String serial;
 	private int type;
 	private int timeType;
@@ -91,21 +98,32 @@ public class EnergyResponse extends ActionSupport {
 	private Date parseDatetime(String str) {
 		SimpleDateFormat sdf = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss");
 		try {
-			return sdf.parse(startTime);
+			return sdf.parse(str);
 		} catch (ParseException e) {
 			throw new RuntimeException(e);
 		}
 	}
+	
 	public String responseHisData() 
 	{
 		// eb.getHisData(serial, type,startTime, endTime, this);
 		Date begin = parseDatetime(startTime);
 		Date end = parseDatetime(endTime);
 		
+		Map<Integer,HistoryDataObj> map =new HashMap<Integer, HistoryDataObj>();
+		eb.getSignalInfo(map, serial);
+
 		Iterable<HistoryAI> history = eb.selectHistoryAIByIdAndTsRange(convertStringToIntegers(serial), begin, end, type);
+		
+		for(HistoryAI h : history) {
+			eb.convertHistoryAIToJsonArray(map, h.getId(), h.getTs(), h.getValue());
+		}
+		
+		eb.setHistoryAIToResponse(this, map);
 		
 		return "success";
 	}
+	
 	public String responseCurve()
 	{
 		eb.getCurve(serial, this);

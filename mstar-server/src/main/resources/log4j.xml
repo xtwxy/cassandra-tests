@@ -11,9 +11,12 @@
 	</appender>
 
 	<!-- Loggers -->
-	<logger name="org.springframework">
-		<level value="warn" />
-	</logger>
+    <logger name="org.springframework">
+        <level value="warn" />
+    </logger>
+    <logger name="com.wincom.mstar">
+        <level value="debug" />
+    </logger>
 
 	<!-- Root Logger -->
 	<root>

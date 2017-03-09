@@ -17,12 +17,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.wincom.mstar.domain.HistoryAI;
 import com.wincom.mstar.impl.AlarmAnalysisResponse;
 import com.wincom.mstar.impl.EnergyResponse;
+import com.wincom.mstar.repository.HistoryAIDayRepository;
 import com.wincom.mstar.repository.HistoryAIHourRepository;
 import com.wincom.mstar.repository.HistoryAIMinuteRepository;
 import com.wincom.mstar.repository.HistoryAIMonthRepository;
@@ -35,10 +38,14 @@ import net.sf.json.JSONObject;
 
 @Component
 public class EnergyBase {
+	Log log = LogFactory.getLog(this.getClass());
+	
 	@Autowired
 	private HistoryAIYearRepository historyAIYearRepository;
 	@Autowired
-	private HistoryAIMonthRepository historyMonthDayRepository;
+	private HistoryAIMonthRepository historyAIMonthRepository;
+	@Autowired
+	private HistoryAIDayRepository historyAIDayRepository;
 	@Autowired
 	private HistoryAIHourRepository historyAIHourRepository;
 	@Autowired
@@ -667,26 +674,22 @@ public class EnergyBase {
 		}
 	}
 	public Iterable<HistoryAI> selectHistoryAIByIdAndTsRange(List<Integer> ids, Date begin, Date end, int type) {
+		log.info("query type = " + type + ", id: " + ids + ", begin = " + begin + ", end = " + end);
 		switch(type)
 		{
 		case 0://年
-			historyAIYearRepository.findByIdAndDateRange(ids, begin, end);
-			break;
+			return historyAIYearRepository.findByIdAndDateRange(ids, begin, end);
 		case 1://月
-			historyAIMonthRepository.findByIdAndDateRange(ids, begin, end);
-			break;
+			return historyAIMonthRepository.findByIdAndDateRange(ids, begin, end);
 		case 2://日
-			historyAIDayRepository.findByIdAndDateRange(ids, begin, end);
-			break;
+			return historyAIDayRepository.findByIdAndDateRange(ids, begin, end);
 		case 3://15分钟
-			historyAIQuarterRepository.findByIdAndDateRange(ids, begin, end);
-			break;
+			return historyAIQuarterRepository.findByIdAndDateRange(ids, begin, end);
 		case 4://1分钟
-			historyAIMinuteRepository.findByIdAndDateRange(ids, begin, end);
-			break;
+			return historyAIMinuteRepository.findByIdAndDateRange(ids, begin, end);
 		}
 
-		return null;
+		return new ArrayList<>();
 	}
 	
 	public String getHisData(String signalLstId,int type,String startTime,String endTime,EnergyResponse response)
@@ -754,14 +757,18 @@ public class EnergyBase {
 			System.out.println(sql);
 			getHisDataFromMstar(dbName,sql,map);
 		}
-		HistoryDataObj value;
+		
+		setHistoryAIToResponse(response, map);
+		
+		String str="";
+		return str;
+	}
+	public void setHistoryAIToResponse(EnergyResponse response, Map<Integer, HistoryDataObj> map) {
 		for (Integer key : map.keySet()) {  
-		    value = map.get(key);
+			HistoryDataObj value = map.get(key);
 		    value.setData_num(value.getData().size());
 		    response.getTrend_data().put(value.getSerial(),value);
 		}
-		String str="";
-		return str;
 	}
 	public void getHisDataFromMstar(String dbName,String sql,Map<Integer,HistoryDataObj> map)
 	{
@@ -787,12 +794,7 @@ public class EnergyBase {
 					DataObjID=rs.getInt("DataObjID");
 					CurrentValue=rs.getDouble("CurrentValue");
 					times=rs.getTimestamp("RecordTime");
-					time=times.getTime()/1000;
-					//time=times.getTime();
-					JSONArray tmp=new JSONArray();
-					tmp.add(time);
-					tmp.add(getBig(CurrentValue).setScale(2, BigDecimal.ROUND_HALF_UP));
-					map.get(new Integer(DataObjID)).getData().add(tmp);
+					convertHistoryAIToJsonArray(map, DataObjID, times.getTime(), CurrentValue);
 				}
 			}
 			catch(SQLException e)
@@ -804,6 +806,20 @@ public class EnergyBase {
 			db.close();
 		}
 	}
+	
+	public void convertHistoryAIToJsonArray(Map<Integer, HistoryDataObj> map, int DataObjID, long timestamp, double CurrentValue) {
+		HistoryDataObj h = map.get(new Integer(DataObjID));
+		if(h != null) { 
+			long time;
+			time=timestamp/1000;
+			//time=times.getTime();
+			JSONArray tmp=new JSONArray();
+			tmp.add(time);
+			tmp.add(getBig(CurrentValue).setScale(2, BigDecimal.ROUND_HALF_UP));
+			h.getData().add(tmp);
+		}
+	}
+	
 	public int getParent_Id(int serial)
 	{
 		String sql = String.format("SELECT LogObjID,LogObjType,ParLogObjID FROM CLogicalObject WHERE LogObjID=%d",serial);;

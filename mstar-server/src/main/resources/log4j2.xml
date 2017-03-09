@@ -9,9 +9,12 @@
 		<Root level="error">
 			<AppenderRef ref="Console" />
 		</Root>
-		<Logger name="org.springframework" level="warn">
-			<AppenderRef ref="Console" />
-		</Logger>
+        <Logger name="org.springframework" level="warn">
+            <AppenderRef ref="Console" />
+        </Logger>
+        <Logger name="com.wincom.mstar" level="debug">
+            <AppenderRef ref="Console" />
+        </Logger>
 	</Loggers>
 </Configuration>
     
