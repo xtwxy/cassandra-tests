@@ -1,7 +1,7 @@
 package ipmi.test;
 
 public class Server {
-	private Integer port;
+	private Integer port = 0x0298;
 
 	public Server(Integer port) {
 		this.port = port;

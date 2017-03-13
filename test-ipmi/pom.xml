@@ -23,6 +23,22 @@
 			<version>1.0.1</version>
 		</dependency>
 		<dependency>
+			<groupId>org.anarres.ipmi</groupId>
+			<artifactId>ipmi-protocol</artifactId>
+			<version>1.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-all</artifactId>
+			<version>5.0.0.Alpha2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.barchart.udt</groupId>
+			<artifactId>barchart-udt-bundle</artifactId>
+			<version>2.3.0</version>
+		</dependency>
+
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>${junit.version}</version>
@@ -36,7 +52,8 @@
 				<artifactId>exec-maven-plugin</artifactId>
 				<version>${exec-maven-plugin.version}</version>
 				<configuration>
-					<mainClass>cassandra.tests.BulkInsert</mainClass>
+					<mainClass>ipmi.test.Main</mainClass>
+					<commandlineArgs>client 9000</commandlineArgs>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -67,7 +84,7 @@
 						<manifest>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>lib/</classpathPrefix>
-							<mainClass>cassandra.tests.BulkInsert</mainClass>
+							<mainClass>ipmi.test.Main</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
