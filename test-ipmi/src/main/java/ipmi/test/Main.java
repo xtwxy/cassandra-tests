@@ -17,8 +17,19 @@ public class Main {
 					server.start();
 				}
 			} else if ("client".equalsIgnoreCase(clientOrServer)) {
-				Client client = new Client();
-				client.start();
+				if(args.length == 1) {
+					Client client = new Client();
+					client.start();
+				} else if(args.length == 2) {
+					Client client = new Client(args[1]);
+					client.start();
+				} else if(args.length == 3) {
+					Integer port = Integer.valueOf(args[2]);
+					Client client = new Client(args[1], port);
+					client.start();
+				} else {
+					usage();
+				}
 			} else if ("echo-client".equalsIgnoreCase(clientOrServer)) {
 				MsgEchoClient.main(args);
 			} else if ("echo-server".equalsIgnoreCase(clientOrServer)) {
