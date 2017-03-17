@@ -38,7 +38,6 @@ public class ClientHandler extends SimpleChannelInboundHandler<DatagramPacket> {
 
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket msg) throws Exception {
-		System.err.println(msg);
 		LOG.info(msg.toString());
 		ctx.writeAndFlush(new DatagramPacket(msg.content(), msg.sender()));
 	}
