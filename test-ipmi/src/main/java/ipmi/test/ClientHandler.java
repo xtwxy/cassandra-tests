@@ -1,60 +1,45 @@
 package ipmi.test;
 
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import org.anarres.ipmi.protocol.packet.asf.AsfCapabilitiesRequestData;
-import org.anarres.ipmi.protocol.packet.rmcp.RmcpPacket;
-
-import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.channel.udt.UdtMessage;
+import io.netty.channel.socket.DatagramPacket;
+import io.netty.util.CharsetUtil;
+import io.netty.util.internal.SocketUtils;
 
-public class ClientHandler extends SimpleChannelInboundHandler<UdtMessage> {
+@Sharable
+public class ClientHandler extends SimpleChannelInboundHandler<DatagramPacket> {
 
-    private final UdtMessage message;
+	private static final Logger LOG = LoggerFactory.getLogger(ClientHandler.class);
+	private String host;
+	private Integer port;
 
-    public ClientHandler() {
-        super(false);
-        final ByteBuf byteBuf = Unpooled.buffer(32);
-        for (int i = 0; i < byteBuf.capacity(); i++) {
-            byteBuf.writeByte((byte) i);
-        }
-        message = new UdtMessage(byteBuf);
-    }
-
-    @Override
-    public void channelActive(final ChannelHandlerContext ctx) {
-//        System.err.println("ECHO active " + NioUdtProvider.socketUDT(ctx.channel()).toStringOptions());
-//        ctx.writeAndFlush(message);
-    	
-		RmcpPacket packet = new RmcpPacket();
-    	AsfCapabilitiesRequestData data = new AsfCapabilitiesRequestData();
-    
-		packet.withData(data);
-		SocketAddress remoteAddress = new InetSocketAddress("192.168.0.69", 9000);
-		packet.withRemoteAddress(remoteAddress);
-		
-		ctx.channel().writeAndFlush(packet);//, channel.voidPromise()).sync();
-    }
-
-    @Override
-    public void channelReadComplete(ChannelHandlerContext ctx) {
-        ctx.flush();
-    }
-
-    @Override
-    public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
-        cause.printStackTrace();
-        ctx.close();
-    }
+	public ClientHandler(String host, Integer port) {
+		super(false);
+		this.host = host;
+		this.port = port;
+	}
 
 	@Override
-	protected void messageReceived(ChannelHandlerContext ctx, UdtMessage msg) throws Exception {
-		System.err.println("message received.");
-        ctx.write(msg);
-		//msg.release();
+	public void channelActive(final ChannelHandlerContext ctx) {
+		System.err.println("channelActive");
+
+//		ctx.writeAndFlush(new DatagramPacket(Unpooled.copiedBuffer("QOTM?", CharsetUtil.UTF_8),
+//				SocketUtils.socketAddress(host, port)));
+
+		DatagramPacket msg = new DatagramPacket(Unpooled.copiedBuffer("Hello, World!", CharsetUtil.UTF_8),
+				SocketUtils.socketAddress(host, port));
+		ctx.writeAndFlush(msg);
+	}
+
+	@Override
+	protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket msg) throws Exception {
+		System.err.println(msg);
+		LOG.info(msg.toString());
+		ctx.writeAndFlush(new DatagramPacket(msg.content(), msg.sender()));
 	}
 }

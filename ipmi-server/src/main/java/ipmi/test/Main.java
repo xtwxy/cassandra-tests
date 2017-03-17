@@ -6,16 +6,16 @@ public class Main {
 		if (args.length >= 1) {
 			String clientOrServer = args[0];
 			if ("server".equalsIgnoreCase(clientOrServer)) {
-				if (args.length < 2) {
+				if (args.length == 1) {
 					usage();
-				} else {
+				} else if(args.length == 2){
 					Integer port = Integer.valueOf(args[1]);
-					Server server = new Server(port);
+					IpmiServerImpl server = new IpmiServerImpl(port);
 					server.start();
+				} else {
+					usage();
 				}
 			} else if ("client".equalsIgnoreCase(clientOrServer)) {
-				Client client = new Client();
-				client.start();
 			} else {
 				usage();
 			}
