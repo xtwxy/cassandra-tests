@@ -53,7 +53,7 @@
 				<version>${exec-maven-plugin.version}</version>
 				<configuration>
 					<mainClass>ipmi.test.Main</mainClass>
-					<commandlineArgs>client 192.168.0.78 8007</commandlineArgs>
+					<commandlineArgs>client 192.168.0.69 8007</commandlineArgs>
 				</configuration>
 			</plugin>
 			<plugin>

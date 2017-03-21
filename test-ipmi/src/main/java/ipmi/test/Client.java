@@ -46,6 +46,7 @@ public class Client {
 				protected void initChannel(DatagramChannel ch) throws Exception {
 					ch.pipeline().addLast(
                             new LoggingHandler(LogLevel.INFO),
+                            //new IpmiCodec(new IpmiSessionManager()),
                             new ClientHandler(address, port));
 				}
             	 
