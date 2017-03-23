@@ -13,11 +13,11 @@ public class ServerHandler extends SimpleChannelInboundHandler<DatagramPacket> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ServerHandler.class);
 	ServerHandler() {
-		super(false);
+		super(true);
 	}
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket msg) throws Exception {
 		LOG.info(msg.toString());
-		ctx.writeAndFlush(new DatagramPacket(msg.content(), msg.sender()));
+		//ctx.writeAndFlush(new DatagramPacket(msg.content(), msg.sender()));
 	}
 }

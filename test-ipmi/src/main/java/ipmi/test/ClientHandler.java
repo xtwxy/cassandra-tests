@@ -35,7 +35,7 @@ public class ClientHandler
 //		r.chassisCommand = ChassisControlRequest.ChassisCommand.PowerUp;
 		
 		DatagramPacket msg = new DatagramPacket(
-				Unpooled.copiedBuffer("Hello, World!", CharsetUtil.UTF_8),
+				Unpooled.copiedBuffer("0xcafe!", CharsetUtil.UTF_8),
 				new InetSocketAddress(host, port));
 		ctx.writeAndFlush(msg);
 	}

@@ -2,6 +2,9 @@ package ipmi.test;
 
 import java.util.concurrent.ThreadFactory;
 
+import org.anarres.ipmi.client.netty.IpmiCodec;
+import org.anarres.ipmi.protocol.client.session.IpmiSessionManager;
+
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
@@ -36,6 +39,7 @@ public class IpmiServerImpl {
 			protected void initChannel(DatagramChannel ch) throws Exception {
 				ch.pipeline().addLast(
                        new LoggingHandler(LogLevel.INFO),
+                       new IpmiCodec(new IpmiSessionManager()),
                        new ServerHandler());
 			}
        	 
