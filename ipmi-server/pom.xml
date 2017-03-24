@@ -20,12 +20,12 @@
 		<dependency>
 			<groupId>org.anarres.ipmi</groupId>
 			<artifactId>ipmi-client-netty</artifactId>
-			<version>1.0.1</version>
+			<version>1.0.2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.anarres.ipmi</groupId>
 			<artifactId>ipmi-protocol</artifactId>
-			<version>1.0.1</version>
+			<version>1.0.2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>io.netty</groupId>
