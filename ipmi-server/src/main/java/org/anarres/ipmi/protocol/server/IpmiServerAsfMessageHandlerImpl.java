@@ -23,18 +23,15 @@ import org.anarres.ipmi.protocol.packet.asf.AsfSystemStateRequestData;
 import org.anarres.ipmi.protocol.packet.asf.AsfSystemStateResponseData;
 import org.anarres.ipmi.protocol.packet.asf.AsfUnconditionalPowerDownData;
 import org.anarres.ipmi.protocol.packet.rmcp.RmcpPacket;
-import org.anarres.ipmi.protocol.server.dispatch.IpmiPayloadReceiveDispatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class IpmiServerAsfMessageHandlerImpl extends IpmiClientAsfMessageHandler.Adapter {
     private static final Logger LOG = LoggerFactory.getLogger(IpmiServerAsfMessageHandlerImpl.class);
     
-    private IpmiPayloadReceiveDispatcher dispatcher;
     private IpmiPacketSender sender;
     
-    public IpmiServerAsfMessageHandlerImpl(@Nonnull IpmiPayloadReceiveDispatcher dispatcher, @Nonnull IpmiPacketSender sender) {
-    	this.dispatcher = dispatcher;
+    public IpmiServerAsfMessageHandlerImpl(@Nonnull IpmiPacketSender sender) {
     	this.sender = sender;
     }
 

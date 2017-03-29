@@ -28,6 +28,8 @@ import org.anarres.ipmi.protocol.packet.ipmi.command.messaging.GetChannelCipherS
 import org.anarres.ipmi.protocol.packet.ipmi.command.messaging.GetChannelCipherSuitesResponse;
 import org.anarres.ipmi.protocol.packet.ipmi.command.messaging.GetChannelInfoRequest;
 import org.anarres.ipmi.protocol.packet.ipmi.command.messaging.GetChannelInfoResponse;
+import org.anarres.ipmi.protocol.packet.ipmi.command.messaging.GetSessionChallengeRequest;
+import org.anarres.ipmi.protocol.packet.ipmi.command.messaging.GetSessionChallengeResponse;
 import org.anarres.ipmi.protocol.packet.ipmi.command.messaging.SetSessionPrivilegeLevelRequest;
 import org.anarres.ipmi.protocol.packet.ipmi.command.messaging.SetSessionPrivilegeLevelResponse;
 import org.anarres.ipmi.protocol.packet.ipmi.command.sdr.GetSDRRepositoryInfoRequest;
@@ -324,6 +326,18 @@ public class IpmiServerCommandHandler implements IpmiClientIpmiCommandHandler {
 			GetSOLConfigurationParametersResponse response) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void handleGetSessionChallengeRequest(IpmiHandlerContext context, GetSessionChallengeRequest request) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void handleGetSessionChallengeResponse(IpmiHandlerContext context, GetSessionChallengeResponse response) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

@@ -10,9 +10,8 @@ import org.anarres.ipmi.protocol.client.visitor.IpmiHandlerContext;
 import org.anarres.ipmi.protocol.packet.ipmi.payload.IpmiPayload;
 import org.anarres.ipmi.protocol.packet.rmcp.Packet;
 import org.anarres.ipmi.protocol.server.IpmiServerAsfMessageHandlerImpl;
-import org.anarres.ipmi.protocol.server.IpmiServerIpmiCommandHandlerImpl;
 import org.anarres.ipmi.protocol.server.IpmiServerIpmiPayloadHandlerImpl;
-import org.anarres.ipmi.protocol.server.dispatch.IpmiPayloadReceiveDispatcher;
+import org.anarres.ipmi.protocol.server.dispatch.IpmiServerPayloadReceiveDispatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,20 +23,21 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 @Sharable
 public class ServerHandler 
 	extends ChannelInboundHandlerAdapter
-	implements IpmiHandlerContext.IpmiPacketQueue, IpmiPayloadTransmitQueue.IpmiPacketSender {
+	implements 
+	IpmiHandlerContext.IpmiPacketQueue, 
+	IpmiPayloadTransmitQueue.IpmiPacketSender 
+	{
 
 	private static final Logger LOG = LoggerFactory.getLogger(ServerHandler.class);
 
 	private Channel channel;
 	private final IpmiSessionManager sessionManager = new IpmiSessionManager();
-	private IpmiPayloadReceiveDispatcher dispatcher = new IpmiPayloadReceiveDispatcher(sessionManager);
-    private final IpmiPayloadTransmitQueue queue = new IpmiPayloadTransmitQueue(dispatcher, this);
-	private IpmiServerIpmiPayloadHandlerImpl ipmiPayloadHandler = new IpmiServerIpmiPayloadHandlerImpl(dispatcher, this);
-	private IpmiServerAsfMessageHandlerImpl asfMessageHandler = new IpmiServerAsfMessageHandlerImpl(dispatcher, this);
-	private IpmiServerIpmiCommandHandlerImpl ipmiCommandHandler = new IpmiServerIpmiCommandHandlerImpl(dispatcher, this);
+	private IpmiServerPayloadReceiveDispatcher dispatcher = new IpmiServerPayloadReceiveDispatcher(sessionManager);
+	private IpmiServerIpmiPayloadHandlerImpl ipmiPayloadHandler = new IpmiServerIpmiPayloadHandlerImpl(this);
+	private IpmiServerAsfMessageHandlerImpl asfMessageHandler = new IpmiServerAsfMessageHandlerImpl(this);
 	
 	ServerHandler() {
-		dispatcher.setIpmiPayloadHandler(ipmiPayloadHandler, asfMessageHandler, ipmiCommandHandler);
+		dispatcher.setIpmiPayloadHandler(ipmiPayloadHandler, asfMessageHandler);
 	}
 	
     @Override
@@ -51,9 +51,9 @@ public class ServerHandler
         try {
             final Packet packet = (Packet) msg;
             IpmiHandlerContext context = new IpmiHandlerContext(this, (InetSocketAddress) packet.getRemoteAddress());
-            dispatcher.dispatch(context, packet);
             LOG.error(msg.toString());
             System.out.println(msg.toString());
+            dispatcher.dispatch(context, packet);
         } catch (Exception e) {
             ctx.fireExceptionCaught(e);
             throw e;
@@ -73,11 +73,12 @@ public class ServerHandler
 	@Override
 	public void queue(IpmiHandlerContext context, IpmiSession session, IpmiPayload message,
 			Class<? extends IpmiPayload> responseType, IpmiReceiver receiver) {
-		queue.queue(context, session, message, responseType, receiver);	
+		throw new UnsupportedOperationException("Not implemented.");
 	}
 
 	@Override
 	public void send(Packet packet) {
+		System.out.println(packet.toString());
 		channel.writeAndFlush(packet, channel.voidPromise());	
 	}
 }

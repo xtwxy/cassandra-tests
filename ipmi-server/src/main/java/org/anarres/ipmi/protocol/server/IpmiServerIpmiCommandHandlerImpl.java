@@ -1,10 +1,17 @@
 package org.anarres.ipmi.protocol.server;
 
+import java.net.InetSocketAddress;
+import java.util.HashSet;
+
 import javax.annotation.Nonnull;
 
 import org.anarres.ipmi.protocol.client.dispatch.IpmiPayloadTransmitQueue.IpmiPacketSender;
+import org.anarres.ipmi.protocol.client.session.IpmiSession;
 import org.anarres.ipmi.protocol.client.visitor.IpmiClientIpmiCommandHandler;
 import org.anarres.ipmi.protocol.client.visitor.IpmiHandlerContext;
+import org.anarres.ipmi.protocol.packet.ipmi.Ipmi15SessionWrapper;
+import org.anarres.ipmi.protocol.packet.ipmi.IpmiChannelNumber;
+import org.anarres.ipmi.protocol.packet.ipmi.IpmiSessionAuthenticationType;
 import org.anarres.ipmi.protocol.packet.ipmi.command.chassis.ChassisControlRequest;
 import org.anarres.ipmi.protocol.packet.ipmi.command.chassis.ChassisControlResponse;
 import org.anarres.ipmi.protocol.packet.ipmi.command.chassis.GetChassisCapabilitiesRequest;
@@ -27,10 +34,14 @@ import org.anarres.ipmi.protocol.packet.ipmi.command.messaging.GetChannelAccessR
 import org.anarres.ipmi.protocol.packet.ipmi.command.messaging.GetChannelAccessResponse;
 import org.anarres.ipmi.protocol.packet.ipmi.command.messaging.GetChannelAuthenticationCapabilitiesRequest;
 import org.anarres.ipmi.protocol.packet.ipmi.command.messaging.GetChannelAuthenticationCapabilitiesResponse;
+import org.anarres.ipmi.protocol.packet.ipmi.command.messaging.GetChannelAuthenticationCapabilitiesResponse.ExtendedCapabilities;
+import org.anarres.ipmi.protocol.packet.ipmi.command.messaging.GetChannelAuthenticationCapabilitiesResponse.LoginStatus;
 import org.anarres.ipmi.protocol.packet.ipmi.command.messaging.GetChannelCipherSuitesRequest;
 import org.anarres.ipmi.protocol.packet.ipmi.command.messaging.GetChannelCipherSuitesResponse;
 import org.anarres.ipmi.protocol.packet.ipmi.command.messaging.GetChannelInfoRequest;
 import org.anarres.ipmi.protocol.packet.ipmi.command.messaging.GetChannelInfoResponse;
+import org.anarres.ipmi.protocol.packet.ipmi.command.messaging.GetSessionChallengeRequest;
+import org.anarres.ipmi.protocol.packet.ipmi.command.messaging.GetSessionChallengeResponse;
 import org.anarres.ipmi.protocol.packet.ipmi.command.messaging.SetSessionPrivilegeLevelRequest;
 import org.anarres.ipmi.protocol.packet.ipmi.command.messaging.SetSessionPrivilegeLevelResponse;
 import org.anarres.ipmi.protocol.packet.ipmi.command.sdr.GetSDRRepositoryInfoRequest;
@@ -49,18 +60,20 @@ import org.anarres.ipmi.protocol.packet.ipmi.command.sensor.GetSensorThresholdRe
 import org.anarres.ipmi.protocol.packet.ipmi.command.sensor.GetSensorThresholdResponse;
 import org.anarres.ipmi.protocol.packet.ipmi.command.sol.GetSOLConfigurationParametersRequest;
 import org.anarres.ipmi.protocol.packet.ipmi.command.sol.GetSOLConfigurationParametersResponse;
-import org.anarres.ipmi.protocol.server.dispatch.IpmiPayloadReceiveDispatcher;
+import org.anarres.ipmi.protocol.packet.rmcp.RmcpMessageClass;
+import org.anarres.ipmi.protocol.packet.rmcp.RmcpMessageRole;
+import org.anarres.ipmi.protocol.packet.rmcp.RmcpPacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class IpmiServerIpmiCommandHandlerImpl implements IpmiClientIpmiCommandHandler {
     private static final Logger LOG = LoggerFactory.getLogger(IpmiServerAsfMessageHandlerImpl.class);
-    
-    private IpmiPayloadReceiveDispatcher dispatcher;
+   
+    private IpmiSession session;
     private IpmiPacketSender sender;
     
-    public IpmiServerIpmiCommandHandlerImpl(@Nonnull IpmiPayloadReceiveDispatcher dispatcher, @Nonnull IpmiPacketSender sender) {
-    	this.dispatcher = dispatcher;
+    public IpmiServerIpmiCommandHandlerImpl(IpmiSession session, @Nonnull IpmiPacketSender sender) {
+    	this.session = session;
     	this.sender = sender;
     }
 
@@ -77,8 +90,44 @@ public class IpmiServerIpmiCommandHandlerImpl implements IpmiClientIpmiCommandHa
 	@Override
 	public void handleGetChannelAuthenticationCapabilitiesRequest(IpmiHandlerContext context,
 			GetChannelAuthenticationCapabilitiesRequest request) {
+		LOG.info(request.toString());
+		
+		RmcpPacket packet = new RmcpPacket();
+		
+		packet.withRemoteAddress(context.getSystemAddress());
+		packet.withMessageRole(RmcpMessageRole.ACK);
+		packet.withMessageClass(RmcpMessageClass.IPMI);
+		
+		Ipmi15SessionWrapper data = new Ipmi15SessionWrapper();
+		
 		GetChannelAuthenticationCapabilitiesResponse response = new GetChannelAuthenticationCapabilitiesResponse();
-		throw new UnsupportedOperationException("Not implemented.");
+		response.setSequenceNumber(request.getSequenceNumber());
+		response.channelNumber = IpmiChannelNumber.CURRENT;
+		
+		response.authenticationTypes = new HashSet<>();
+		response.authenticationTypes.add(IpmiSessionAuthenticationType.NONE);
+		response.authenticationTypes.add(IpmiSessionAuthenticationType.PASSWORD);
+		response.authenticationTypes.add(IpmiSessionAuthenticationType.MD2);
+		response.authenticationTypes.add(IpmiSessionAuthenticationType.MD5);
+		response.authenticationTypes.add(IpmiSessionAuthenticationType.OEM_PROPRIETARY);
+		response.authenticationTypes.add(IpmiSessionAuthenticationType.RMCPP);
+		
+		response.loginStatus = new HashSet<>();
+		response.loginStatus.add(LoginStatus.USERLEVEL_AUTH_STATUS);
+	
+		response.extendedCapabilities = new HashSet<>();
+		response.extendedCapabilities.add(ExtendedCapabilities.IPMI20_CONNECTIONS_SUPPORTED);
+		response.extendedCapabilities.add(ExtendedCapabilities.IPMI15_CONNECTIONS_SUPPORTED);
+		
+		data.setIpmiPayload(response);
+		data.setIpmiSessionId(0);
+		data.setIpmiSessionSequenceNumber(0);
+		
+		packet.withData(data);
+		
+		sender.send(packet);
+		
+		LOG.info(packet.toString());
 	}
 
 	@Override
@@ -295,6 +344,33 @@ public class IpmiServerIpmiCommandHandlerImpl implements IpmiClientIpmiCommandHa
 	@Override
 	public void handleGetSOLConfigurationParametersResponse(IpmiHandlerContext context,
 			GetSOLConfigurationParametersResponse response) {
+		throw new UnsupportedOperationException("Not implemented.");
+	}
+
+	@Override
+	public void handleGetSessionChallengeRequest(IpmiHandlerContext context, GetSessionChallengeRequest request) {
+		RmcpPacket packet = new RmcpPacket();
+		
+		packet.withSequenceNumber(request.getSequenceNumber());
+		packet.withRemoteAddress(context.getSystemAddress());
+		
+		Ipmi15SessionWrapper sessionWrapper = new Ipmi15SessionWrapper();
+		
+		GetSessionChallengeResponse response = new GetSessionChallengeResponse();
+		
+		response.withChallengeStringData(request.getUserName());
+		response.setSequenceNumber(request.getSequenceNumber());
+		
+		sessionWrapper.setIpmiPayload(response);
+		sessionWrapper.setIpmiSessionId(0);
+		
+		packet.withData(sessionWrapper);
+		
+		sender.send(packet);
+	}
+
+	@Override
+	public void handleGetSessionChallengeResponse(IpmiHandlerContext context, GetSessionChallengeResponse response) {
 		throw new UnsupportedOperationException("Not implemented.");
 	}
 

@@ -8,33 +8,28 @@ import org.anarres.ipmi.protocol.client.visitor.IpmiClientRmcpMessageHandler;
 import org.anarres.ipmi.protocol.client.visitor.IpmiHandlerContext;
 import org.anarres.ipmi.protocol.packet.asf.AsfRmcpData;
 import org.anarres.ipmi.protocol.packet.ipmi.IpmiSessionWrapper;
-import org.anarres.ipmi.protocol.packet.ipmi.command.IpmiCommand;
 import org.anarres.ipmi.protocol.packet.ipmi.payload.IpmiPayload;
 import org.anarres.ipmi.protocol.packet.rmcp.OEMRmcpMessage;
 import org.anarres.ipmi.protocol.packet.rmcp.RmcpData;
-import org.anarres.ipmi.protocol.server.dispatch.IpmiPayloadReceiveDispatcher;
+import org.anarres.ipmi.protocol.server.dispatch.IpmiServerPayloadReceiveDispatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 
 public class IpmiServerRmcpMessageHandlerImpl extends IpmiClientRmcpMessageHandler.Adapter {
-    private static final Logger LOG = LoggerFactory.getLogger(IpmiPayloadReceiveDispatcher.class);
-    
+	private static final Logger LOG = LoggerFactory.getLogger(IpmiServerPayloadReceiveDispatcher.class);
+
 	private final IpmiPacketContext sessionManager;
 	private final IpmiServerIpmiPayloadHandlerImpl ipmiPayloadHandler;
 
 	private IpmiServerAsfMessageHandlerImpl asfMessageHandler;
-	private IpmiServerIpmiCommandHandlerImpl ipmiCommandHandler;
-	
+
 	public IpmiServerRmcpMessageHandlerImpl(@Nonnull IpmiPacketContext sessionManager,
-			IpmiServerIpmiPayloadHandlerImpl ipmiPayloadHandler,
-			IpmiServerAsfMessageHandlerImpl asfMessageHandler, 
-			IpmiServerIpmiCommandHandlerImpl ipmiCommandHandler) {
+			IpmiServerIpmiPayloadHandlerImpl ipmiPayloadHandler, IpmiServerAsfMessageHandlerImpl asfMessageHandler) {
 		this.sessionManager = sessionManager;
 		this.ipmiPayloadHandler = ipmiPayloadHandler;
 		this.asfMessageHandler = asfMessageHandler;
-		this.ipmiCommandHandler = ipmiCommandHandler;
 	}
 
 	@Override
@@ -44,13 +39,11 @@ public class IpmiServerRmcpMessageHandlerImpl extends IpmiClientRmcpMessageHandl
 
 	@Override
 	public void handleIpmiRmcpData(IpmiHandlerContext context, IpmiSessionWrapper message) {
+		int sessionId = message.getIpmiSessionId();
+		IpmiSession session = (sessionId == 0) ? null : sessionManager.getIpmiSession(sessionId);
 		IpmiPayload payload = message.getIpmiPayload();
-		if(payload instanceof IpmiCommand) {
-			IpmiCommand command = (IpmiCommand) payload;
-			command.apply(ipmiCommandHandler, context);
-		} else {
-			throw new UnsupportedOperationException("Not implemented.");
-		}
+		payload.apply(ipmiPayloadHandler, context, session);
+
 	}
 
 	@Override
@@ -58,9 +51,9 @@ public class IpmiServerRmcpMessageHandlerImpl extends IpmiClientRmcpMessageHandl
 		throw new UnsupportedOperationException("Not implemented.");
 	}
 
-    @Override
-    public void handleDefault(IpmiHandlerContext context, RmcpData message) {
-    	Preconditions.checkNotNull(message, "Message was null.");
-        LOG.warn("Discarded:\n" + message); 
-    }
+	@Override
+	public void handleDefault(IpmiHandlerContext context, RmcpData message) {
+		Preconditions.checkNotNull(message, "Message was null.");
+		LOG.warn("Discarded:\n" + message);
+	}
 }
