@@ -1,6 +1,5 @@
 package org.anarres.ipmi.protocol.server;
 
-import java.net.InetSocketAddress;
 import java.util.HashSet;
 
 import javax.annotation.Nonnull;
@@ -28,6 +27,8 @@ import org.anarres.ipmi.protocol.packet.ipmi.command.global.GetDeviceIdRequest;
 import org.anarres.ipmi.protocol.packet.ipmi.command.global.GetDeviceIdResponse;
 import org.anarres.ipmi.protocol.packet.ipmi.command.lan.GetLANConfigurationParametersRequest;
 import org.anarres.ipmi.protocol.packet.ipmi.command.lan.GetLANConfigurationParametersResponse;
+import org.anarres.ipmi.protocol.packet.ipmi.command.messaging.ActivateSessionRequest;
+import org.anarres.ipmi.protocol.packet.ipmi.command.messaging.ActivateSessionResponse;
 import org.anarres.ipmi.protocol.packet.ipmi.command.messaging.CloseSessionRequest;
 import org.anarres.ipmi.protocol.packet.ipmi.command.messaging.CloseSessionResponse;
 import org.anarres.ipmi.protocol.packet.ipmi.command.messaging.GetChannelAccessRequest;
@@ -371,6 +372,18 @@ public class IpmiServerIpmiCommandHandlerImpl implements IpmiClientIpmiCommandHa
 
 	@Override
 	public void handleGetSessionChallengeResponse(IpmiHandlerContext context, GetSessionChallengeResponse response) {
+		throw new UnsupportedOperationException("Not implemented.");
+	}
+
+	@Override
+	public void handleActivateSessionRequest(IpmiHandlerContext context,
+			ActivateSessionRequest activateSessionRequest) {
+		throw new UnsupportedOperationException("Not implemented.");
+	}
+
+	@Override
+	public void handleActivateSessionResponse(IpmiHandlerContext context,
+			ActivateSessionResponse activateSessionResponse) {
 		throw new UnsupportedOperationException("Not implemented.");
 	}
 

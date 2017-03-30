@@ -18,6 +18,8 @@ import org.anarres.ipmi.protocol.packet.ipmi.command.global.GetDeviceIdRequest;
 import org.anarres.ipmi.protocol.packet.ipmi.command.global.GetDeviceIdResponse;
 import org.anarres.ipmi.protocol.packet.ipmi.command.lan.GetLANConfigurationParametersRequest;
 import org.anarres.ipmi.protocol.packet.ipmi.command.lan.GetLANConfigurationParametersResponse;
+import org.anarres.ipmi.protocol.packet.ipmi.command.messaging.ActivateSessionRequest;
+import org.anarres.ipmi.protocol.packet.ipmi.command.messaging.ActivateSessionResponse;
 import org.anarres.ipmi.protocol.packet.ipmi.command.messaging.CloseSessionRequest;
 import org.anarres.ipmi.protocol.packet.ipmi.command.messaging.CloseSessionResponse;
 import org.anarres.ipmi.protocol.packet.ipmi.command.messaging.GetChannelAccessRequest;
@@ -336,6 +338,20 @@ public class IpmiServerCommandHandler implements IpmiClientIpmiCommandHandler {
 
 	@Override
 	public void handleGetSessionChallengeResponse(IpmiHandlerContext context, GetSessionChallengeResponse response) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void handleActivateSessionRequest(IpmiHandlerContext context,
+			ActivateSessionRequest activateSessionRequest) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void handleActivateSessionResponse(IpmiHandlerContext context,
+			ActivateSessionResponse activateSessionResponse) {
 		// TODO Auto-generated method stub
 		
 	}
