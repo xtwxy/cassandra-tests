@@ -96,7 +96,7 @@ public class IpmiServerIpmiPayloadHandlerImpl extends IpmiClientIpmiPayloadHandl
             IpmiServerIpmiCommandHandlerImpl handler = new IpmiServerIpmiCommandHandlerImpl(session, sender);
             request.apply(handler, context);
         } else {
-        	handleDefault(context, session, message);
+        	throw new UnsupportedOperationException("Not implemented.");
         }
     }
 }

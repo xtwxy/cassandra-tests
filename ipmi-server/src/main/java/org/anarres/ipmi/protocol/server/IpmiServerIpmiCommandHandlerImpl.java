@@ -1,5 +1,7 @@
 package org.anarres.ipmi.protocol.server;
 
+import java.net.InetSocketAddress;
+import java.util.Arrays;
 import java.util.HashSet;
 
 import javax.annotation.Nonnull;
@@ -61,6 +63,7 @@ import org.anarres.ipmi.protocol.packet.ipmi.command.sensor.GetSensorThresholdRe
 import org.anarres.ipmi.protocol.packet.ipmi.command.sensor.GetSensorThresholdResponse;
 import org.anarres.ipmi.protocol.packet.ipmi.command.sol.GetSOLConfigurationParametersRequest;
 import org.anarres.ipmi.protocol.packet.ipmi.command.sol.GetSOLConfigurationParametersResponse;
+import org.anarres.ipmi.protocol.packet.ipmi.payload.RequestedMaximumPrivilegeLevel;
 import org.anarres.ipmi.protocol.packet.rmcp.RmcpMessageClass;
 import org.anarres.ipmi.protocol.packet.rmcp.RmcpMessageRole;
 import org.anarres.ipmi.protocol.packet.rmcp.RmcpPacket;
@@ -140,7 +143,36 @@ public class IpmiServerIpmiCommandHandlerImpl implements IpmiClientIpmiCommandHa
 	@Override
 	public void handleSetSessionPrivilegeLevelRequest(IpmiHandlerContext context,
 			SetSessionPrivilegeLevelRequest request) {
-		throw new UnsupportedOperationException("Not implemented.");
+		RmcpPacket packet = new RmcpPacket();
+		packet.withSequenceNumber(request.getSequenceNumber());
+		packet.withRemoteAddress(context.getSystemAddress());
+		
+		Ipmi15SessionWrapper sessionWrapper = new Ipmi15SessionWrapper();
+		
+		SetSessionPrivilegeLevelResponse response = new SetSessionPrivilegeLevelResponse();
+		
+		response.withSource(request.getSourceAddress(), request.getSourceLun());
+		response.withTarget(request.getTargetAddress(), request.getTargetLun());
+		response.setSequenceNumber(request.getSequenceNumber());
+		response.privilegeLevel = RequestedMaximumPrivilegeLevel.ADMINISTRATOR;
+		
+		sessionWrapper.setIpmiPayload(response);
+		sessionWrapper.setIpmiSessionId(0);
+		sessionWrapper.setIpmiSessionSequenceNumber(request.getSequenceNumber());
+		sessionWrapper.withAuthenticationType(IpmiSessionAuthenticationType.MD5);
+		
+		sessionWrapper.setIpmiPayload(response);
+		sessionWrapper.withMessageAuthenticationCode(new byte[]{
+				(byte)0xcc, (byte)0x80, 0x48, 
+				(byte)0x95, 0x00, 0x2a, (byte)0xd6, (byte)0xe6, (byte)0xb3, 0x7c, 0x2a, 
+				0x6d, 0x17, 0x2a, 0x40, 0x4b
+		});
+		
+		packet.withData(sessionWrapper);
+		
+		sender.send(packet);
+		
+		LOG.info(packet.toString());
 	}
 
 	@Override
@@ -377,8 +409,38 @@ public class IpmiServerIpmiCommandHandlerImpl implements IpmiClientIpmiCommandHa
 
 	@Override
 	public void handleActivateSessionRequest(IpmiHandlerContext context,
-			ActivateSessionRequest activateSessionRequest) {
-		throw new UnsupportedOperationException("Not implemented.");
+			ActivateSessionRequest request) {
+		RmcpPacket packet = new RmcpPacket();
+		
+		packet.withSequenceNumber(request.getSequenceNumber());
+		packet.withRemoteAddress(context.getSystemAddress());
+		
+		Ipmi15SessionWrapper sessionWrapper = new Ipmi15SessionWrapper();
+		
+		ActivateSessionResponse response = new ActivateSessionResponse();
+		
+		response.withSource(request.getSourceAddress(), request.getSourceLun());
+		response.withTarget(request.getTargetAddress(), request.getTargetLun());
+		response.withAuthenticationType(request.getAuthenticationType());
+		response.setSequenceNumber(request.getSequenceNumber());
+	
+		response.withSessionId(0xcafe);
+		response.withInitialInboundSequence(request.getInitialOutboundSequence());
+		response.withMaximumPrivilegeLevelAllowed(RequestedMaximumPrivilegeLevel.ADMINISTRATOR);
+	
+		sessionWrapper.setIpmiPayload(response);
+		sessionWrapper.setIpmiSessionId(0);
+		sessionWrapper.setIpmiSessionSequenceNumber(request.getSequenceNumber());
+		sessionWrapper.withAuthenticationType(IpmiSessionAuthenticationType.MD5);
+		sessionWrapper.withMessageAuthenticationCode(new byte[]{
+				(byte)0xcc, (byte)0x80, 0x48, 
+				(byte)0x95, 0x00, 0x2a, (byte)0xd6, (byte)0xe6, (byte)0xb3, 0x7c, 0x2a, 
+				0x6d, 0x17, 0x2a, 0x40, 0x4b
+		});
+		
+		packet.withData(sessionWrapper);
+
+		sender.send(packet);
 	}
 
 	@Override
