@@ -1,11 +1,10 @@
 package org.anarres.ipmi.protocol.server;
 
-import java.net.InetSocketAddress;
-import java.util.Arrays;
 import java.util.HashSet;
 
 import javax.annotation.Nonnull;
 
+import org.anarres.ipmi.protocol.IanaEnterpriseNumber;
 import org.anarres.ipmi.protocol.client.dispatch.IpmiPayloadTransmitQueue.IpmiPacketSender;
 import org.anarres.ipmi.protocol.client.session.IpmiSession;
 import org.anarres.ipmi.protocol.client.visitor.IpmiClientIpmiCommandHandler;
@@ -27,6 +26,7 @@ import org.anarres.ipmi.protocol.packet.ipmi.command.fru.ReadFRUDataRequest;
 import org.anarres.ipmi.protocol.packet.ipmi.command.fru.ReadFRUDataResponse;
 import org.anarres.ipmi.protocol.packet.ipmi.command.global.GetDeviceIdRequest;
 import org.anarres.ipmi.protocol.packet.ipmi.command.global.GetDeviceIdResponse;
+import org.anarres.ipmi.protocol.packet.ipmi.command.global.GetDeviceIdResponse.DeviceSupport;
 import org.anarres.ipmi.protocol.packet.ipmi.command.lan.GetLANConfigurationParametersRequest;
 import org.anarres.ipmi.protocol.packet.ipmi.command.lan.GetLANConfigurationParametersResponse;
 import org.anarres.ipmi.protocol.packet.ipmi.command.messaging.ActivateSessionRequest;
@@ -71,7 +71,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class IpmiServerIpmiCommandHandlerImpl implements IpmiClientIpmiCommandHandler {
-    private static final Logger LOG = LoggerFactory.getLogger(IpmiServerAsfMessageHandlerImpl.class);
+    private static final byte[] AUTH_CODE = new byte[]{
+			(byte)0xcc, (byte)0x80, 0x48, 
+			(byte)0x95, 0x00, 0x2a, (byte)0xd6, (byte)0xe6, (byte)0xb3, 0x7c, 0x2a, 
+			0x6d, 0x17, 0x2a, 0x40, 0x4b
+	};
+
+	private static final Logger LOG = LoggerFactory.getLogger(IpmiServerAsfMessageHandlerImpl.class);
    
     private IpmiSession session;
     private IpmiPacketSender sender;
@@ -83,7 +89,41 @@ public class IpmiServerIpmiCommandHandlerImpl implements IpmiClientIpmiCommandHa
 
 	@Override
 	public void handleGetDeviceIdRequest(IpmiHandlerContext context, GetDeviceIdRequest request) {
-		throw new UnsupportedOperationException("Not implemented.");
+		LOG.info(request.toString());
+		
+		RmcpPacket packet = new RmcpPacket();
+		
+		packet.withRemoteAddress(context.getSystemAddress());
+		packet.withMessageRole(RmcpMessageRole.ACK);
+		packet.withMessageClass(RmcpMessageClass.IPMI);
+		
+		Ipmi15SessionWrapper data = new Ipmi15SessionWrapper();
+		
+		GetDeviceIdResponse response = new GetDeviceIdResponse();
+		response.setSequenceNumber(request.getSequenceNumber());
+		response.setIpmiCompletionCode((byte) 0x0);
+		response.deviceFirmwareRevisionMajor = 0xcafe;
+		response.auxiliaryFirmwareRevisionInformation = 0x22;
+		response.deviceAvailable = true;
+		response.deviceFirmwareRevisionMinor = 0x21;
+		response.deviceId = 0x01;
+		response.deviceIpmiRevision = 0x2;
+		response.deviceProvidesDeviceSDRs = false;
+		response.deviceRevision = 0x03;
+		response.deviceSupport.add(DeviceSupport.Chassis);
+		response.deviceSupport.add(DeviceSupport.SensorDevice);
+		response.oemEnterpriseNumber = IanaEnterpriseNumber.IBM_Corporation.getNumber();
+		response.productId = 0x04;
+		
+		data.setIpmiPayload(response);
+		data.setIpmiSessionId(0);
+		data.setIpmiSessionSequenceNumber(0);
+		
+		packet.withData(data);
+		
+		sender.send(packet);
+		
+		LOG.info(packet.toString());
 	}
 
 	@Override
@@ -162,11 +202,7 @@ public class IpmiServerIpmiCommandHandlerImpl implements IpmiClientIpmiCommandHa
 		sessionWrapper.withAuthenticationType(IpmiSessionAuthenticationType.MD5);
 		
 		sessionWrapper.setIpmiPayload(response);
-		sessionWrapper.withMessageAuthenticationCode(new byte[]{
-				(byte)0xcc, (byte)0x80, 0x48, 
-				(byte)0x95, 0x00, 0x2a, (byte)0xd6, (byte)0xe6, (byte)0xb3, 0x7c, 0x2a, 
-				0x6d, 0x17, 0x2a, 0x40, 0x4b
-		});
+		sessionWrapper.withMessageAuthenticationCode(AUTH_CODE);
 		
 		packet.withData(sessionWrapper);
 		
@@ -183,7 +219,31 @@ public class IpmiServerIpmiCommandHandlerImpl implements IpmiClientIpmiCommandHa
 
 	@Override
 	public void handleCloseSessionRequest(IpmiHandlerContext context, CloseSessionRequest request) {
-		throw new UnsupportedOperationException("Not implemented.");
+		RmcpPacket packet = new RmcpPacket();
+		packet.withSequenceNumber(request.getSequenceNumber());
+		packet.withRemoteAddress(context.getSystemAddress());
+		
+		Ipmi15SessionWrapper sessionWrapper = new Ipmi15SessionWrapper();
+		
+		CloseSessionResponse response = new CloseSessionResponse();
+		
+		response.withSource(request.getSourceAddress(), request.getSourceLun());
+		response.withTarget(request.getTargetAddress(), request.getTargetLun());
+		response.setSequenceNumber(request.getSequenceNumber());
+		
+		sessionWrapper.setIpmiPayload(response);
+		sessionWrapper.setIpmiSessionId(0);
+		sessionWrapper.setIpmiSessionSequenceNumber(request.getSequenceNumber());
+		sessionWrapper.withAuthenticationType(IpmiSessionAuthenticationType.MD5);
+		
+		sessionWrapper.setIpmiPayload(response);
+		sessionWrapper.withMessageAuthenticationCode(AUTH_CODE);
+		
+		packet.withData(sessionWrapper);
+		
+		sender.send(packet);
+		
+		LOG.info(packet.toString());
 	}
 
 	@Override
@@ -432,11 +492,7 @@ public class IpmiServerIpmiCommandHandlerImpl implements IpmiClientIpmiCommandHa
 		sessionWrapper.setIpmiSessionId(0);
 		sessionWrapper.setIpmiSessionSequenceNumber(request.getSequenceNumber());
 		sessionWrapper.withAuthenticationType(IpmiSessionAuthenticationType.MD5);
-		sessionWrapper.withMessageAuthenticationCode(new byte[]{
-				(byte)0xcc, (byte)0x80, 0x48, 
-				(byte)0x95, 0x00, 0x2a, (byte)0xd6, (byte)0xe6, (byte)0xb3, 0x7c, 0x2a, 
-				0x6d, 0x17, 0x2a, 0x40, 0x4b
-		});
+		sessionWrapper.withMessageAuthenticationCode(AUTH_CODE);
 		
 		packet.withData(sessionWrapper);
 
