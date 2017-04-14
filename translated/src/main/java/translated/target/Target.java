@@ -1,10 +1,11 @@
 package translated.target;
 
+import translated.action.Action;
 import java.util.List;
 
-public interface Target {
-	public String name();
-	public String type();
-	public List<Criteria> depends();
-	public List<Action> exections();
+public class Target {
+	private String name;
+	private String type;
+	private List<Criteria> depends;
+	private List<Action> exections;
 }

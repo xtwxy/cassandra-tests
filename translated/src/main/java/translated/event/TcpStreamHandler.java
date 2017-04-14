@@ -1,6 +1,7 @@
 package translated.event;
 
 import translated.channel.Channel;
+import translated.channel.Pipeline;
 
 public class TcpStreamHandler implements FileEventHandler {
 	public TcpStreamHandler() {
@@ -9,6 +10,7 @@ public class TcpStreamHandler implements FileEventHandler {
 			public void write(byte[] b) { }
 			public void close() { }
 			public void timeout() { }
+			public Pipeline pipeline() { return null; }
 		};
 	}
 	public void onEvent(FileEvent fe) {
